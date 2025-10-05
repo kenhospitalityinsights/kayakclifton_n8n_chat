@@ -1,0 +1,621 @@
+{
+  "name": "PB Booking Confirmation",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "customEmailConfig": "=[\"UNSEEN\", [\"SUBJECT\", \"Online Booking confirmation\"]]",
+          "trackLastMessageId": true
+        }
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        -1200,
+        80
+      ],
+      "id": "6287d30e-1efd-4691-ac24-6891c3e18b1b",
+      "name": "Email Trigger (IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "8l6c2xWd6QvQcQ8C",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        352,
+        80
+      ],
+      "id": "0c445ba8-5ae4-4427-ade2-3fb863a9db0f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "useCustomSchema": true,
+        "operation": "getAll",
+        "tableId": "customers",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phone_no",
+              "condition": "eq",
+              "keyValue": "={{ `${$('ExtractBookingDetails').item.json.phoneNo}` }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        80
+      ],
+      "id": "e105c7fe-19f7-4b91-85de-34697e13f703",
+      "name": "SearchExistingCustomers",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "customers",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.madeBy }}"
+            },
+            {
+              "fieldId": "phone_no",
+              "fieldValue": "={{$('ExtractBookingDetails').item.json.phoneNo}}"
+            },
+            {
+              "fieldId": "date_created",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.date }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        176
+      ],
+      "id": "0d43d9d0-dc1a-497d-b1c6-5820263c50aa",
+      "name": "CreateNewCustomer",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "bookings",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "date_booked",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.date }}"
+            },
+            {
+              "fieldId": "activity",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.activity }}"
+            },
+            {
+              "fieldId": "count",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.pax }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.notes }}"
+            },
+            {
+              "fieldId": "RateOption",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.rateOption }}"
+            },
+            {
+              "fieldId": "Time",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.time }}"
+            },
+            {
+              "fieldId": "PromoCode",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.promoCode }}"
+            },
+            {
+              "fieldId": "Payment Method",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.paymentMethod }}"
+            },
+            {
+              "fieldId": "Source",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.source }}"
+            },
+            {
+              "fieldId": "customer_id",
+              "fieldValue": "={{ $json.id }}"
+            },
+            {
+              "fieldId": "actbridge_id",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.bookingId }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        128,
+        176
+      ],
+      "id": "00929726-c8a6-4a79-ba42-9ebdc73b84c5",
+      "name": "CreateNewBooking",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "bookings",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "actbridge_id",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.bookingId }}"
+            },
+            {
+              "fieldId": "date_booked",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.date }}"
+            },
+            {
+              "fieldId": "activity",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.activity }}"
+            },
+            {
+              "fieldId": "count",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.pax }}"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.notes }}"
+            },
+            {
+              "fieldId": "RateOption",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.rateOption }}"
+            },
+            {
+              "fieldId": "Time",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.time }}"
+            },
+            {
+              "fieldId": "Source",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.source }}"
+            },
+            {
+              "fieldId": "Payment Method",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.paymentMethod }}"
+            },
+            {
+              "fieldId": "PromoCode",
+              "fieldValue": "={{ $('ExtractBookingDetails').item.json.promoCode }}"
+            },
+            {
+              "fieldId": "customer_id",
+              "fieldValue": "={{ $('SearchExistingCustomers').first().json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a1dafe4b-5557-4ea7-9beb-764b0a239bd2",
+      "name": "AddBookingToCustomer",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "839849205868166",
+        "recipientPhoneNumber": "={{ $('ExtractBookingDetails').item.json.phoneNo }}",
+        "template": "pb_booking_confirmation|en_US",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $('ExtractBookingDetails').item.json.pax }}"
+                  },
+                  {
+                    "text": "={{ $('ExtractBookingDetails').item.json.date }}"
+                  },
+                  {
+                    "text": "={{ $('ExtractBookingDetails').item.json.time }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        576,
+        80
+      ],
+      "id": "47d24b6d-d6b1-4b30-8b7e-e8c66bd5bbce",
+      "name": "Send template",
+      "webhookId": "91c4011d-df54-44aa-afd7-1c6fc4e95eef",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "AS7DGhv4ueVd35SN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6e5ccabd-6e20-4d0d-926e-ca21636c3ece",
+              "leftValue": "={{$json.id.toString()}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        80
+      ],
+      "id": "a1f72118-4534-432c-8e36-b32d399ee7ee",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "// N8N Code Node - Email Content Parser for Pedal Boat Bookings\n// This code extracts booking details from email content\n\n// Get the email content from the input item - try multiple possible field names\nconst inputData = $input.all()[0].json;\nconst emailContent = inputData.textHtml || inputData.textPlain || inputData.body || inputData.text || inputData.content || inputData.html;\n\nif (!emailContent) {\n  console.log('Available input fields:', Object.keys(inputData));\n  throw new Error('No email content found. Available fields: ' + Object.keys(inputData).join(', '));\n}\n\n// Log the email content for debugging\nconsole.log('Email content found:', emailContent ? 'Yes' : 'No');\nconsole.log('Content type:', typeof emailContent);\nconsole.log('Content length:', emailContent ? emailContent.length : 0);\n\n// Function to clean HTML and extract text\nfunction cleanHtml(html) {\n  if (!html) return '';\n  \n  // Remove HTML tags but preserve the content\n  let text = html.replace(/<script[^>]*>.*?<\\/script>/gi, '')\n                .replace(/<style[^>]*>.*?<\\/style>/gi, '')\n                .replace(/<[^>]+>/g, ' ')\n                .replace(/&nbsp;/g, ' ')\n                .replace(/&amp;/g, '&')\n                .replace(/&lt;/g, '<')\n                .replace(/&gt;/g, '>')\n                .replace(/&quot;/g, '\"')\n                .replace(/&#39;/g, \"'\")\n                // Clean up UTF-8 encoding issues\n                .replace(/Â/g, '')\n                .replace(/À|Á|Ä|Ã|Å|à|á|ä|ã|å/g, 'a')\n                .replace(/È|É|Ê|Ë|è|é|ê|ë/g, 'e')\n                .replace(/Ì|Í|Î|Ï|ì|í|î|ï/g, 'i')\n                .replace(/Ò|Ó|Ô|Ö|Õ|ò|ó|ô|ö|õ/g, 'o')\n                .replace(/Ù|Ú|Û|Ü|ù|ú|û|ü/g, 'u')\n                .replace(/\\s+/g, ' ')\n                .trim();\n  \n  return text;\n}\n\n// Convert HTML to clean text for easier parsing\nconst cleanText = cleanHtml(emailContent);\nconsole.log('Clean text (first 500 chars):', cleanText.substring(0, 500));\n\n// Function to extract field value using multiple patterns\nfunction extractField(content, fieldName) {\n  if (!content || typeof content !== 'string') {\n    return '';\n  }\n  \n  // Create a more precise boundary pattern that includes all possible next fields\n  const nextFields = '(?=\\\\s*(?:Activity|Rate Option|Date|Time|Booking ID|Pax|Made By|Phone No|Email|Source|Payment Method|Notes|PromoCode|$))';\n  \n  // Try multiple patterns to match different formats\n  const patterns = [\n    // Pattern 1: \"FieldName: Value\" - capture until next field or end\n    new RegExp(`${fieldName}:\\\\s*([^\\\\n\\\\r]+?)\\\\s*${nextFields}`, 'i'),\n    \n    // Pattern 2: \"FieldName Value\" (without colon) - for fields that might not have colon\n    new RegExp(`${fieldName}\\\\s+([^\\\\n\\\\r]+?)\\\\s*${nextFields}`, 'i'),\n    \n    // Pattern 3: More flexible - capture until clear boundary\n    new RegExp(`${fieldName}[:\\\\s]*([^\\\\n\\\\r]+?)\\\\s*(?=Made By:|Phone No:|Email:|Source:|Payment Method:|Notes:|PromoCode:|$)`, 'i')\n  ];\n  \n  for (const pattern of patterns) {\n    const match = content.match(pattern);\n    if (match && match[1].trim()) {\n      let value = match[1].trim();\n      \n      // Additional cleanup for specific fields\n      if (fieldName === 'Rate Option') {\n        value = value.replace(/\\s+Rate$/, ''); // Remove trailing \"Rate\" if captured\n      }\n      \n      return value;\n    }\n  }\n  \n  return '';\n}\n\n// Fixed function for extracting Pax\nfunction extractPax(content) {\n  console.log('Raw content around Pax:', content.substring(content.indexOf('Pax') - 20, content.indexOf('Pax') + 100));\n  \n  const patterns = [\n    // Most specific pattern: look for number x description pattern after Pax\n    /Pax[:\\s]*(?:[A-Z]\\s*)?(\\d+\\s*x\\s*[^@\\n\\r]+?)(?=\\s*@|\\s*per person|Made By:|$)/i,\n    // Look for \"Pax\" followed by content, but stop at \"Made By\" and preserve everything before the @ symbol\n    /Pax[:\\s]*([^@\\n\\r]+?)(?=\\s*@)/i,\n    // Alternative pattern that captures the full pax description until price\n    /Pax[:\\s]*(\\d+\\s*x\\s*[^@\\n\\r]+?)(?=\\s*@|\\s*per person|Made By:|$)/i,\n    // Fallback pattern for cases without @ symbol\n    /Pax[:\\s]*([^\\\\n\\\\r]+?)(?=\\s*Made By:|$)/i,\n    // Most basic pattern as last resort\n    /Pax[:\\s]*([^\\\\n\\\\r]+)/i\n  ];\n  \n  for (const pattern of patterns) {\n    const match = content.match(pattern);\n    if (match && match[1].trim()) {\n      let value = match[1].trim();\n      console.log('Before cleanup:', `\"${value}\"`);\n      \n      // More aggressive cleanup for the stray characters\n      value = value.replace(/\\s*@\\s*R?\\d+[\\.\\d]*\\s*$/i, '') // Remove @ R50.00 etc\n                   .replace(/\\s*per person.*$/i, '')        // Remove \"per person\" text\n                   .replace(/\\s*Af\\d*\\s*$/i, '')           // Remove partial \"Af\" if price got cut off\n                   .replace(/^[A-Z]\\s+/, '')               // Remove single letter at start (like \"A \")\n                   .replace(/^A\\s*/, '')                   // More specific - remove \"A\" at start\n                   .replace(/^\\s*A\\s+/, '')                // Remove \"A\" with any surrounding spaces\n                   .trim();\n      \n      console.log('After cleanup:', `\"${value}\"`);\n      \n      // Don't remove \"South African\" or other descriptive text - only price-related content\n      return value;\n    }\n  }\n  return '';\n}\n\n// Special function for PromoCode (stop before any contact/signature info)\nfunction extractPromoCode(content) {\n  const patterns = [\n    // Look for PromoCode but stop at any signature/contact info or newlines with contact details\n    /PromoCode[:\\s]*([^\\\\n\\\\r]+?)(?=\\s*--|\\s*Ken Walton|\\s*Mobile|\\s*Email|\\s*Website|$)/i,\n    // Try to capture just the promo code value more precisely\n    /PromoCode[:\\s]*([A-Za-z\\s]+?)(?=\\s*--|\\s*Ken|\\s*Mobile|$)/i,\n    // Simple pattern as fallback\n    /PromoCode[:\\s]*([^\\\\n\\\\r]+)/i\n  ];\n  \n  for (const pattern of patterns) {\n    const match = content.match(pattern);\n    if (match && match[1].trim()) {\n      let value = match[1].trim();\n      // Clean up any trailing contact info that might have been captured\n      value = value.replace(/\\s*--.*$/s, '')\n                   .replace(/\\s*Ken Walton.*$/s, '')\n                   .replace(/\\s*Mobile.*$/s, '')\n                   .replace(/\\s*Bi\\s*$/i, 'Birthday'); // Fix truncated \"Birthday\"\n      return value;\n    }\n  }\n  return '';\n}\n\n// Extract all fields from the clean text\nconst extractedData = {\n  activity: extractField(cleanText, 'Activity'),\n  rateOption: extractField(cleanText, 'Rate Option'),\n  date: extractField(cleanText, 'Date'),\n  time: extractField(cleanText, 'Time'),\n  bookingId: extractField(cleanText, 'Booking ID'),\n  pax: extractPax(cleanText),\n  madeBy: extractField(cleanText, 'Made By'),\n  phoneNo: extractField(cleanText, 'Phone No'),\n  email: extractField(cleanText, 'Email'),\n  source: extractField(cleanText, 'Source'),\n  paymentMethod: extractField(cleanText, 'Payment Method'),\n  notes: extractField(cleanText, 'Notes'),\n  promoCode: extractPromoCode(cleanText)\n};\n\n// Log each extraction for debugging\nconsole.log('Extraction results:');\nObject.keys(extractedData).forEach(key => {\n  console.log(`${key}: \"${extractedData[key]}\"`);\n});\n\n// Add specific pax debugging\nconsole.log('PAX DEBUGGING:');\nconsole.log('Clean text around pax:', cleanText.substring(cleanText.toLowerCase().indexOf('pax') - 20, cleanText.toLowerCase().indexOf('pax') + 100));\nconst paxResult = extractPax(cleanText);\nconsole.log('Final pax result from function:', `\"${paxResult}\"`);\nconsole.log('Pax in extracted data:', `\"${extractedData.pax}\"`);\n\n// Force the pax to be just a number if it contains a number\nif (extractedData.pax && typeof extractedData.pax === 'string') {\n  const forceNumberMatch = extractedData.pax.match(/(\\d+)/);\n  if (forceNumberMatch) {\n    extractedData.pax = parseInt(forceNumberMatch[1], 10).toString();\n    console.log('Forced pax to number:', `\"${extractedData.pax}\"`);\n  }\n}\n\n// Additional cleanup - remove empty strings and set to null\nObject.keys(extractedData).forEach(key => {\n  if (extractedData[key] === '') {\n    extractedData[key] = null;\n  }\n});\n\n// Return the extracted data\nreturn [\n  {\n    json: extractedData\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -992,
+        80
+      ],
+      "id": "9862cda1-65b3-4b24-b0bf-99c7f700ad67",
+      "name": "ExtractBookingDetails"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "16lrHaSNyr2cqgqVLdje07lba6Y_GmXNMDJtXF48Ct70",
+          "mode": "list",
+          "cachedResultName": "Confirmation_Reminder_History",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16lrHaSNyr2cqgqVLdje07lba6Y_GmXNMDJtXF48Ct70/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "PB Conf",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16lrHaSNyr2cqgqVLdje07lba6Y_GmXNMDJtXF48Ct70/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Mobile Number": "={{ $json.contacts[0].wa_id }}",
+            "Timestamp": "={{ new Date().toISOString() }}",
+            "Booking ID": "={{ $('Merge').item.json.booking_id }}",
+            "Date_Booked": "={{ $('Merge').item.json.date_booked }}",
+            "Notes": "={{ $('Merge').item.json.notes }}",
+            "Pax": "={{ $('Merge').item.json.count }}",
+            "Acitivity": "={{ $('Merge').item.json.activity }}",
+            "RateOption": "={{ $('Merge').item.json.RateOption }}",
+            "Time": "={{ $('Merge').item.json.Time }}",
+            "PromoCode": "={{ $('Merge').item.json.PromoCode }}",
+            "ActivityBridgeID": "={{ $('Merge').item.json.actbridge_id }}",
+            "CustomerID": "={{ $('Merge').item.json.customer_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mobile Number",
+              "displayName": "Mobile Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Booking ID",
+              "displayName": "Booking ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date_Booked",
+              "displayName": "Date_Booked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Acitivity",
+              "displayName": "Acitivity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pax",
+              "displayName": "Pax",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RateOption",
+              "displayName": "RateOption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PromoCode",
+              "displayName": "PromoCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CustomerID",
+              "displayName": "CustomerID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ActivityBridgeID",
+              "displayName": "ActivityBridgeID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        800,
+        80
+      ],
+      "id": "81997d5d-a38e-408f-8d70-2f6daf400f8c",
+      "name": "PB_Book_Conf_History",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XYucd3DR64MQQEnk",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "ExtractBookingDetails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearchExistingCustomers": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateNewCustomer": {
+      "main": [
+        [
+          {
+            "node": "CreateNewBooking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateNewBooking": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AddBookingToCustomer": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AddBookingToCustomer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CreateNewCustomer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtractBookingDetails": {
+      "main": [
+        [
+          {
+            "node": "SearchExistingCustomers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send template": {
+      "main": [
+        [
+          {
+            "node": "PB_Book_Conf_History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d5674679-3819-41f2-9287-f4e4f92387c5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f25ffdfd9ac4f46ed0fe8646db58961b7294dcd47b569e8a3078b9413cbe757"
+  },
+  "id": "C53RlPwzORYaIeor",
+  "tags": []
+}

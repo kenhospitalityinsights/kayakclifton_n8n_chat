@@ -1,0 +1,283 @@
+{
+  "name": "Send PB Reminder",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "72174eb9-6597-4790-8121-932d706c0843",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "839849205868166",
+        "recipientPhoneNumber": "={{ $json.phone_no }}",
+        "template": "pb_booking_reminder|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $('Get Today's Bookings').item.json.Time }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "ee56abdb-1e02-4023-9d81-882318981bb7",
+      "name": "Send template",
+      "webhookId": "1b4284e5-a21c-46df-9040-5f7b0bc6f5bf",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "AS7DGhv4ueVd35SN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "customers",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.customer_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ce3e8d79-c229-49e3-819a-f4fa2647008e",
+      "name": "Get a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "16lrHaSNyr2cqgqVLdje07lba6Y_GmXNMDJtXF48Ct70",
+          "mode": "list",
+          "cachedResultName": "Confirmation_Reminder_History",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16lrHaSNyr2cqgqVLdje07lba6Y_GmXNMDJtXF48Ct70/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1747282789,
+          "mode": "list",
+          "cachedResultName": "PB Reminder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16lrHaSNyr2cqgqVLdje07lba6Y_GmXNMDJtXF48Ct70/edit#gid=1747282789"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ new Date().toISOString() }}",
+            "ID": "={{ $('Get a row').item.json.id }}",
+            "Name": "={{ $('Get a row').item.json.name }}",
+            "Phone Number": "={{ $('Get a row').item.json.phone_no }}",
+            "Date Created": "={{ $('Get a row').item.json.date_created }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        832,
+        0
+      ],
+      "id": "fba8e277-b9f4-4497-a943-41b956758d72",
+      "name": "PB_Reminder_History",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XYucd3DR64MQQEnk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "bookings",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "activity",
+              "condition": "eq",
+              "keyValue": "Pedal Boat Cape Town"
+            },
+            {
+              "keyName": "date_booked",
+              "condition": "gte",
+              "keyValue": "={{ $now.toFormat('yyyy-MM-dd') }}\n"
+            },
+            {
+              "keyName": "date_booked",
+              "condition": "lt",
+              "keyValue": "={{ $now.plus({ days: 1 }).toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "84e545ec-3763-40dc-b98e-3c7ec1bc4e58",
+      "name": "Get Today's Bookings",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Today's Bookings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Send template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send template": {
+      "main": [
+        [
+          {
+            "node": "PB_Reminder_History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Today's Bookings": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3bf41c14-92ba-422c-9530-2f7113b4b2c6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f25ffdfd9ac4f46ed0fe8646db58961b7294dcd47b569e8a3078b9413cbe757"
+  },
+  "id": "uJCRvke1lZuf5xEY",
+  "tags": []
+}

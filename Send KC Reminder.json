@@ -1,0 +1,283 @@
+{
+  "name": "Send KC Reminder",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "026b9bdc-fcf7-45e1-8f37-418bb911116f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "bookings",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "activity",
+              "condition": "neq",
+              "keyValue": "Pedal Boat Cape Town"
+            },
+            {
+              "keyName": "date_booked",
+              "condition": "gte",
+              "keyValue": "={{ $now.toFormat('yyyy-MM-dd') }}\n"
+            },
+            {
+              "keyName": "date_booked",
+              "condition": "lt",
+              "keyValue": "={{ $now.plus({ days: 1 }).toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "cc8f6d7b-30c9-4e14-a060-06c5191d9d60",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "839849205868166",
+        "recipientPhoneNumber": "={{ $json.phone_no }}",
+        "template": "kc_booking_reminder|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $('Get many rows').item.json.Time }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "b29afc94-fe50-49c0-bf28-ce342926d552",
+      "name": "Send template",
+      "webhookId": "c5cbf85d-fca6-4008-b900-5c806d728fbb",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "AS7DGhv4ueVd35SN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "customers",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.customer_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "2b0ba6e6-af73-4d02-b5a2-eab21560bb08",
+      "name": "Get a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "16lrHaSNyr2cqgqVLdje07lba6Y_GmXNMDJtXF48Ct70",
+          "mode": "list",
+          "cachedResultName": "Confirmation_Reminder_History",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16lrHaSNyr2cqgqVLdje07lba6Y_GmXNMDJtXF48Ct70/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1894029512,
+          "mode": "list",
+          "cachedResultName": "KC Reminder",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16lrHaSNyr2cqgqVLdje07lba6Y_GmXNMDJtXF48Ct70/edit#gid=1894029512"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ new Date().toISOString() }}",
+            "ID": "={{ $('Get a row').item.json.id }}",
+            "Name": "={{ $('Get a row').item.json.name }}",
+            "Phone Number": "={{ $('Get a row').item.json.phone_no }}",
+            "Date Created": "={{ $('Get a row').item.json.date_created }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        832,
+        0
+      ],
+      "id": "82914acd-ae7d-4324-97f0-417c487b8e4f",
+      "name": "KC_Reminder_History",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XYucd3DR64MQQEnk",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Send template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send template": {
+      "main": [
+        [
+          {
+            "node": "KC_Reminder_History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cec98cca-c045-4136-93b8-b7a2541bf270",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f25ffdfd9ac4f46ed0fe8646db58961b7294dcd47b569e8a3078b9413cbe757"
+  },
+  "id": "TxIb9zsD2DE8nVRL",
+  "tags": []
+}
