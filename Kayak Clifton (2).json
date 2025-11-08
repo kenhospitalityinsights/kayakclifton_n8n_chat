@@ -1,0 +1,1631 @@
+{
+  "name": "Kayak Clifton",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Edit Fields').item.json.message_text }}",
+        "options": {
+          "systemMessage": "=# AI Agent Prompt: Kayak Clifton & Pedal Boat Cape Town\n\nToday's date is {{ $('Get Current Date').item.json.formattedDate }}\n\n---\n\n## Bot Identity\n\nYou are the official AI assistant for two businesses operating from the same location:\n- **Kayak Clifton**\n- **Pedal Boat Cape Town**\n\nYou represent both services equally.\n\n### Identity Rules\n- When asked who you are, confirm you are associated with both services\n- **Never deny** being Kayak Clifton\n- Example: If asked \"Is this Kayak Clifton?\" respond with \"Yup, that's us! We handle the kayaking, and we also have the pedal boats right here.\"\n\n---\n\n## Tone & Style\n\n- Use a sassy, local Cape Town (South African) tone with attitude\n- Keep all responses under 40 words\n- Avoid technical jargon\n- Be friendly, confident, and local\n\n---\n\n## Core Directive\n\nYour primary goal is to answer questions using **only the information from your tools**. Do not use any outside knowledge.\n\n---\n\n## Escalation Protocol\n\n### You MUST escalate immediately if:\n1. Tools do not provide enough information to confidently answer the question\n2. User asks to speak to a human, person, or manager\n3. User asks to cancel a booking\n4. User provides feedback (positive or negative)\n5. Kayaking customers who are running late (see Running Late Protocol)\n\n### Escalation Format\nWhen escalating, your response must be exactly:\n\n```\nESCALATE_TO_HUMAN\nJa, I get it. This needs a human touch. I've sent your message to the team, and they'll be in touch shortly to help you out.\n```\n\nLine 1: The keyword `ESCALATE_TO_HUMAN` by itself\nLine 2: The full message for the user\n\n---\n\n## Running Late Protocol\n\n### Step 1: Identify the Service\nWhen a customer mentions they are running late (phrases like \"I'm running late\", \"I'll be 20 min late\", \"going to be late\"):\n\nAsk: \"No worries! Are you booked for Pedal Boat or Kayaking?\"\n\n### Step 2: Respond Based on Service\n\n**If Pedal Boat:**\nRespond: \"No stress! Just make sure you arrive at least an hour before we close and you'll be sorted.\"\n\n**If Kayaking/Kayak Clifton:**\nExecute ESCALATE_TO_HUMAN protocol immediately\n\n**If Unclear:**\nAsk again: \"Just to confirm - is that for Pedal Boat or Kayaking?\"\n\n---\n## Booking Intent\n\n### IF user intent is booking (words: book, booking, reserve, availability, make a booking, I want to book) THEN reply exactly:\n\"Lekker — you can book online here: https://secure.activitybridge.com/search?supplierid=51450.\"\nDO NOT escalate, do NOT query other tools for this.\n\n---\n\n## Frequently Asked Questions\n\n### Instagram \"More Info\" Request\nWhen a user comes from Instagram and asks \"Can I get more info on this\" or similar variations, respond with:\n\n\"Exam Season Special - Students & Scholars only pay R50 per person for the month of November. T&C's apply. You can book online here: https://secure.activitybridge.com/search?supplierid=51450.\"\n\n**Note:** This response should NOT use the tools and should NOT trigger name capture on the first interaction.\n\n---\n\n## Conversation Management\n\n### Multiple Questions\nIf a customer asks multiple questions in one message, start by answering the first question only.\n\n### Handling Greetings\nWhen a user sends an initial greeting like \"hi\", \"hello\", \"morning\", \"good morning\", \"hey\":\n- Respond with a friendly greeting back\n- Ask how you can help them today\n- Example: \"Howzit! What can I help you with today?\"\n\n### Handling Acknowledgments\nWhen a user says \"thanks\", \"thank you\", \"cool\", \"ok\", or similar simple acknowledgments (typically after you've already helped them):\n- DO NOT use the tools\n- DO NOT escalate\n- Respond with a short, friendly phrase like \"You're welcome!\", \"Lekker!\", or \"Sharp!\"\n\n### Capturing User's Name\nYour goal is to learn the user's name once per conversation.\n\n**Process:**\n1. Check the chat history first - has the user's name been provided already?\n2. If NO: After answering their question, casually ask for their name\n3. If YES: Do NOT ask again. Use their name to personalize responses\n4. If they reply with just their name: Respond with a simple, friendly confirmation\n\n---\n\n## Tool Usage Strategy\n\nYou have access to two tools. Follow this decision tree:\n\n### Step 1: Primary Tool Selection\n\n**Use `get_daily_update` FIRST for:**\n- Today's operations (\"Are you open today?\", \"What time do you close today?\")\n- Current weather conditions\n- Today-specific status updates\n\n**Use `retrieve_documents` FIRST for:**\n- General business information (standard hours, pricing, policies)\n- What to bring, what to wear\n- Booking procedures\n- Equipment details\n\n### Step 2: Fallback Logic\n- If your primary tool doesn't provide a confident answer, try the secondary tool\n- For time-related questions: Try `get_daily_update` first, then `retrieve_documents`\n- For general info questions: Try `retrieve_documents` first, then `get_daily_update`\n- Only escalate if BOTH tools fail to provide useful information\n\n### Step 3: Answer Construction\n- If you get information from either tool, provide a confident answer\n- Combine information from both tools if relevant\n- If neither tool provides useful information, then escalate\n\n### Examples of Tool Selection\n\n**\"What time do you close?\"**\n- Primary: `get_daily_update` (for today's hours)\n- Fallback: `retrieve_documents` (for standard hours)\n\n**\"How much does it cost?\"**\n- Primary: `retrieve_documents` (for pricing)\n- Fallback: `get_daily_update` (for any daily specials)\n\n**\"Are you open?\"**\n- Primary: `get_daily_update` (for today's status)\n- Fallback: `retrieve_documents` (for standard operating days)"
+        }
+      },
+      "id": "f5888630-3923-43b0-8498-20b24ce12275",
+      "name": "RAG AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -672,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "b291c281-88cf-41ea-b482-068e8f644186",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        -864,
+        976
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        1264
+      ],
+      "id": "6f3ff3b3-07a7-4a1b-be96-3fe44aa34a2d",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -2160,
+        1424
+      ],
+      "id": "c61b94e1-1816-40e0-bc24-5269197946e0",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Edit Fields').item.json.channel }}-{{ $('Edit Fields').item.json.from }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -784,
+        752
+      ],
+      "id": "9558f4b7-2e67-4b36-9c7d-a2d91796dc9f",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type == 'audio' && Boolean($json.audio) }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "7b0e2044-fce8-4189-aaf7-5cee2ca97c49"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio Message"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Text Message"
+        }
+      },
+      "id": "0aeb6d07-3252-4c3b-856d-4cf0698f753e",
+      "name": "Handle Message Types",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -3136,
+        544
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -4128,
+        576
+      ],
+      "id": "9c5101b1-ad6b-4aea-ba1c-2bbcd414342d",
+      "name": "Whatsapp Trigger",
+      "webhookId": "00e3647a-7476-4ca3-b987-b64bd6432a6a",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "lAtb4Jv1hAWD9cWD",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "839849205868166",
+        "recipientPhoneNumber": "={{$('Whatsapp Trigger').item.json.messages[0].from}}",
+        "textBody": "={{ $json.finalReply }}",
+        "additionalFields": {}
+      },
+      "id": "23478961-7f22-4e6d-9584-012e923f440c",
+      "name": "Reply To User",
+      "type": "n8n-nodes-base.whatsApp",
+      "position": [
+        1504,
+        464
+      ],
+      "typeVersion": 1,
+      "webhookId": "c74dfdff-7b90-49a8-b1b7-3119da9e0e96",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "AS7DGhv4ueVd35SN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $json.audio.id }}"
+      },
+      "id": "0523e690-7dd7-41c5-a57c-84b43b1ceac6",
+      "name": "Get Audio URL",
+      "type": "n8n-nodes-base.whatsApp",
+      "position": [
+        -2912,
+        624
+      ],
+      "typeVersion": 1,
+      "webhookId": "a8376a54-b3f4-45a4-aabe-8ec571617872",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "AS7DGhv4ueVd35SN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "id": "1cceb341-07f2-429f-918b-e6ade1bdf025",
+      "name": "Download Audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -2688,
+        624
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "AS7DGhv4ueVd35SN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "messages",
+        "options": {}
+      },
+      "id": "69ab7632-34e3-40d1-b41e-9749afef028c",
+      "name": "Split Out Message Parts",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        -3504,
+        544
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "amount": 0
+      },
+      "id": "76fd0575-c00c-43c0-8541-1b0d74e562e5",
+      "name": "Get Text",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -2464,
+        432
+      ],
+      "webhookId": "ac67be5a-bc76-494e-bb35-ffa61b0c7cf2",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        720
+      ],
+      "id": "8c3839cd-9815-472b-91fd-d6222c8837be",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rZTzcCmhZc34OvXn",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        1216
+      ],
+      "id": "4e6ba28b-6cf8-4b28-ab8b-875f0b053e10",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rZTzcCmhZc34OvXn",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-1.5-pro-latest",
+          "mode": "list",
+          "cachedResultName": "models/gemini-1.5-pro-latest"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2464,
+        624
+      ],
+      "id": "eba9dc3a-5345-409f-b21b-1e8185353490",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rZTzcCmhZc34OvXn",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        -2064,
+        976
+      ],
+      "id": "ba10acd2-aecb-44dc-9651-cffcc9bb69fd",
+      "name": "Supabase Vector Store Loader",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        976
+      ],
+      "id": "a97a24db-132e-4d54-8f30-5da6b7b2fe92",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rZTzcCmhZc34OvXn",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5a6451b-5854-451b-839c-85d6952b1bbb",
+              "name": "finalReply",
+              "value": "Ag sorry man - I cannot find a good answer. I've sent your message to a human — they'll respond as soon as possible.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        512
+      ],
+      "id": "987b711f-025c-4b7a-904c-8d54dfb4bd71",
+      "name": "Set finalReply (True)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7794a9ea-328d-495b-a64e-05a8abd7cccd",
+              "name": "finalReply",
+              "value": "={{ $('escalate').item.json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        688
+      ],
+      "id": "248a7243-920a-4e62-84e9-b69ebe769766",
+      "name": "Set finalReply (False)"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "yyyy/MM/dd",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        544
+      ],
+      "id": "3c944571-faa5-4e02-bae6-13412acbdd86",
+      "name": "Get Current Date"
+    },
+    {
+      "parameters": {
+        "name": "user_documents",
+        "description": "Contains all the user's documents that you can check for context to answer user questions.",
+        "topK": 10
+      },
+      "id": "40bebf78-a62c-41e8-9bbe-301a975026aa",
+      "name": "retrieve_documents",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "caaa4fa0-c3c7-4721-b391-83604a11f8c1",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "ESCALATE_TO_HUMAN",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -112,
+        544
+      ],
+      "id": "6a624923-6b9b-4837-871c-1568b8428607",
+      "name": "escalate"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "839849205868166",
+        "recipientPhoneNumber": "+27825313531",
+        "textBody": "=Please respond to customer message: \"{{ JSON.parse($('Edit Fields').item.json.message_text).body }}\" on {{ $('Edit Fields').item.json.from }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        528,
+        352
+      ],
+      "id": "94465bb8-7f81-45aa-a1fe-90340ddde029",
+      "name": "Fwd to Manager",
+      "webhookId": "4bf2d680-4e2e-4418-8cdd-fac86d2fcda5",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "AS7DGhv4ueVd35SN",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82b8f5d9-84ae-44c3-8d5e-1af54f86abec",
+              "name": "message_type",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "38bdc90a-d4a6-4135-ba52-5b00d2ce4c9c",
+              "name": "message_text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "bd6ddb42-4c1d-4e79-a098-5ed4542c3e48",
+              "name": "from",
+              "value": "={{ $('Whatsapp Trigger').item.json.messages[0].from }}",
+              "type": "string"
+            },
+            {
+              "id": "45e411e6-3ae0-4d99-b669-bc2e10a1d672",
+              "name": "channel",
+              "value": "whatsapp",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5d90e88e-8aaf-4289-8db4-898dac0e4317",
+      "name": "Get User's WhatsApp",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -2112,
+        640
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Edit Fields').item.json.channel }}",
+                    "rightValue": "whatsapp",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "fcc17a90-d1a6-42e7-8500-5496fba5b0b9"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1fb29752-e760-403b-81bd-f785e8b63c7d",
+                    "leftValue": "={{ $('Edit Fields').item.json.channel }}",
+                    "rightValue": "chat",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1056,
+        672
+      ],
+      "id": "b101e232-9fcf-4e2b-bfba-8b62ff783cad",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1296,
+        736
+      ],
+      "id": "c139acad-2606-4af8-a12b-58994961fe1e",
+      "name": "Send a message",
+      "webhookId": "3b3f7daf-923f-47ae-bc92-58d3e763ba43",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        320,
+        0
+      ],
+      "id": "5f7adad5-8a7f-4d1f-92e9-65cb0aae3f6c",
+      "name": "Fwd to Manager1",
+      "webhookId": "4bf2d680-4e2e-4418-8cdd-fac86d2fcda5",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6e7bd640-664d-482f-854f-ba27edfd3faa",
+      "name": "Schedule Trigger1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f65ae9b7-7907-47ee-a377-ffbc219c8390",
+              "leftValue": "={{ $json.finalReply }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "3a506897-eb21-468a-9131-51208163992f",
+              "leftValue": "={{ $json.finalReply }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        688
+      ],
+      "id": "113a4456-a786-41a6-ba18-0f14e632f4ce",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -3648,
+        256
+      ],
+      "id": "35edf1f4-d384-4b66-96f6-8a3ee2f7338d",
+      "name": "When chat message received",
+      "webhookId": "38f3d011-47ec-4336-8035-9c9ba21ed7d7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "23b785c3-f38e-4706-80b7-51f333bba3bd",
+              "name": "message_text",
+              "type": "string",
+              "value": "={{ $('When chat message received').item.json.chatInput }}"
+            },
+            {
+              "id": "9e1f2e0b-36d8-415a-87da-aec61daee298",
+              "name": "channel",
+              "value": "={{ $json.channel }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7648a855-1e42-4951-84d4-ea815128e68f",
+      "name": "Get User's Chat",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -2432,
+        160
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "77ecd667-78b5-4ebd-b33e-091080181526",
+              "name": "channel",
+              "value": "\"chat\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3280,
+        256
+      ],
+      "id": "065b8b87-f260-48af-81ce-d372fc4e9b3c",
+      "name": "Set as Chat"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96b7277b-df12-45b2-9b91-b3922a6b0b03",
+              "name": "message_text",
+              "value": "={{ $json.message_text }}",
+              "type": "string"
+            },
+            {
+              "id": "45f77973-103a-4c5a-900e-0788956b76cf",
+              "name": "from",
+              "value": "={{ $json.from }}",
+              "type": "string"
+            },
+            {
+              "id": "35dc1192-d899-41d0-9d91-a9b8e195c851",
+              "name": "channel",
+              "value": "={{ $json.channel }}",
+              "type": "string"
+            },
+            {
+              "id": "8b98880a-2f9f-41dc-be08-bca84f92490e",
+              "name": "message_type",
+              "value": "=text",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1856,
+        512
+      ],
+      "id": "908ccc71-472d-4bab-bbfe-87837674778c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1XIp-IQr1pFjijVBXptyuUeuz_bCcNC_4DNHBqppUz8o",
+          "mode": "list",
+          "cachedResultName": "KCTODAY",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XIp-IQr1pFjijVBXptyuUeuz_bCcNC_4DNHBqppUz8o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 376914104,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XIp-IQr1pFjijVBXptyuUeuz_bCcNC_4DNHBqppUz8o/edit#gid=376914104"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -352,
+        864
+      ],
+      "id": "373d17d9-c9da-4688-a145-ece996ebdffd",
+      "name": "get_daily_update1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XYucd3DR64MQQEnk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1lWz9en7umCJINA3JiwwiKotFEncZ1yKZ7sNy5Wf8X9g/edit?gid=1229117995#gid=1229117995",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "KC Bot History",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Channel": "={{ $('Edit Fields').item.json.channel }}",
+            "Mobile Number": "={{ $('Edit Fields').item.json.from }}",
+            "Client Message": "={{ JSON.parse($('Edit Fields').item.json.message_text).body }}",
+            "Timestamp": "={{ DateTime.fromSeconds(parseInt($('Whatsapp Trigger').item.json.messages[0].timestamp)).setZone('Africa/Johannesburg').toFormat('dd/MM/yyyy HH:mm:ss') }}",
+            "Response": "={{$('Switch').item.json.finalReply}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Channel",
+              "displayName": "Channel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Mobile Number",
+              "displayName": "Mobile Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Client Message",
+              "displayName": "Client Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Response",
+              "displayName": "Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Conversation History",
+              "displayName": "Conversation History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messaging_product",
+              "displayName": "messaging_product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "contacts",
+              "displayName": "contacts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messages",
+              "displayName": "messages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1744,
+        464
+      ],
+      "id": "1a9e2f70-6984-4e7f-b4fd-a25df3e6bcfa",
+      "name": "KC History",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XYucd3DR64MQQEnk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39624b1d-57d1-45de-9b3d-1ea1e13622db",
+              "name": "file_id",
+              "value": "={{ $json.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3024,
+        976
+      ],
+      "id": "aaaba09b-3349-4b71-a64f-ed0a55fe1ca2",
+      "name": "Set File ID1"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=metadata->>file_id=like.*{{ $json.file_id }}*"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2816,
+        992
+      ],
+      "id": "a2ad9426-5643-4987-8f36-b8ba248757ba",
+      "name": "Delete Old Doc Rows1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "3aE9iH20qJg9zzMX",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1DbluU3ogSeN-enw7TMBD90V-U9IA6LMl",
+          "mode": "list",
+          "cachedResultName": "KayakClifton",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1DbluU3ogSeN-enw7TMBD90V-U9IA6LMl"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3264,
+        864
+      ],
+      "id": "23572264-2969-4559-8000-f25d7c29412c",
+      "name": "File Created1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "5AoT9YzvGVnraWR7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1DbluU3ogSeN-enw7TMBD90V-U9IA6LMl",
+          "mode": "list",
+          "cachedResultName": "KayakClifton",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1DbluU3ogSeN-enw7TMBD90V-U9IA6LMl"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3264,
+        1056
+      ],
+      "id": "4f960520-f58a-445b-ba0b-3ab7a688064a",
+      "name": "File Updated1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "5AoT9YzvGVnraWR7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3264,
+        1248
+      ],
+      "id": "673a6d16-649f-411d-a3a7-4600c231b9b2",
+      "name": "Schedule Trigger2"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File ID1').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2592,
+        992
+      ],
+      "id": "7258b220-bafd-423a-98b2-04b112d1d51e",
+      "name": "Download file1",
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "5AoT9YzvGVnraWR7",
+          "name": "Google Drive account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "id": "3dda06f5-64ed-405a-b20b-9e020e60fcbb",
+      "name": "Extract Document Text1",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -2368,
+        992
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Assuming this is in a Function Item node (runs per input item)\nconst text = $json.message_text || \"\";\n// Convert text to an array of Unicode characters (each emoji or symbol is one element)\nconst chars = Array.from(text);  // Array.from handles surrogate pairs correctly\n// Map each character to either itself (if normal) or an escaped \\u sequence (if emoji/special)\nconst sanitizedText = chars.map(ch => {\n  const codePoint = ch.codePointAt(0);\n  // Check if the character is an emoji or related symbol:\n  if (\n    codePoint === 0x200D || codePoint === 0xFE0F ||                    // ZWJ or Variant Selector-16\n    (codePoint >= 0x1F600 && codePoint <= 0x1F64F) ||                  // Emoticons block\n    (codePoint >= 0x1F300 && codePoint <= 0x1F5FF) ||                  // Misc symbols & pictographs\n    (codePoint >= 0x1F680 && codePoint <= 0x1F6FF) ||                  // Transport & map symbols\n    (codePoint >= 0x1F900 && codePoint <= 0x1F9FF) ||                  // Supplemental symbols & pictographs\n    (codePoint >= 0x1FA70 && codePoint <= 0x1FAFF) ||                  // Symbols & Pictographs Extended-A\n    (codePoint >= 0x2600 && codePoint <= 0x26FF)   ||                  // Misc symbols (e.g. ⚙️, ⛔)\n    (codePoint >= 0x2700 && codePoint <= 0x27BF)   ||                  // Dingbats (e.g. ✅, ✖️)\n    (codePoint >= 0x1F1E6 && codePoint <= 0x1F1FF)                     // Regional indicator symbols (flags)\n  ) {\n    // Replace this char with its Unicode escape \\uXXXX (hex format)\n    return \"\\\\u\" + codePoint.toString(16);\n  } else {\n    // Not an emoji/special char, keep it as is\n    return ch;\n  }\n}).join(\"\");\n\n// Return the result so that n8n can use this sanitized text\nreturn { message_text: sanitizedText };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1472,
+        528
+      ],
+      "id": "33542e29-557b-4091-ace7-8d98ba52ef19",
+      "name": "Remove_emoji"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Supabase Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "retrieve_documents",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG AI Agent": {
+      "main": [
+        [
+          {
+            "node": "escalate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Message Types": {
+      "main": [
+        [
+          {
+            "node": "Get Audio URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Whatsapp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Split Out Message Parts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audio URL": {
+      "main": [
+        [
+          {
+            "node": "Download Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Message Parts": {
+      "main": [
+        [
+          {
+            "node": "Handle Message Types",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Text": {
+      "main": [
+        [
+          {
+            "node": "Get User's WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply To User": {
+      "main": [
+        [
+          {
+            "node": "KC History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Supabase Vector Store Loader",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Get User's WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "retrieve_documents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set finalReply (True)": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set finalReply (False)": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Current Date": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "retrieve_documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "escalate": {
+      "main": [
+        [
+          {
+            "node": "Fwd to Manager",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set finalReply (True)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set finalReply (False)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User's WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Reply To User",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Fwd to Manager1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store Loader",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Set as Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User's Chat": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set as Chat": {
+      "main": [
+        [
+          {
+            "node": "Get User's Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Remove_emoji",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_daily_update1": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File ID1": {
+      "main": [
+        [
+          {
+            "node": "Delete Old Doc Rows1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Old Doc Rows1": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Created1": {
+      "main": [
+        [
+          {
+            "node": "Set File ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Updated1": {
+      "main": [
+        [
+          {
+            "node": "Set File ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Set File ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Extract Document Text1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Document Text1": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store Loader",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove_emoji": {
+      "main": [
+        [
+          {
+            "node": "Get Current Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "WJeYPpvCWCCuiruH"
+  },
+  "versionId": "23ee1e28-800f-4c38-83e8-b93bbc96228d",
+  "meta": {
+    "instanceId": "4f25ffdfd9ac4f46ed0fe8646db58961b7294dcd47b569e8a3078b9413cbe757"
+  },
+  "id": "abNPraef1kAjiqjM",
+  "tags": []
+}
